@@ -5,9 +5,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -19,13 +16,13 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(DataAlreadyExistsException.class)
 	public ResponseEntity<String> handleDataAlreadyExists(DataAlreadyExistsException ex) {
-		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.CONFLICT);
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
 
 	}
 
 	@ExceptionHandler(DataNotFoundException.class)
 	public ResponseEntity<String> handleDataNotFound(DataNotFoundException ex) {
-		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)

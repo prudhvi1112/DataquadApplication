@@ -2,10 +2,9 @@ package com.dataquad.model;
 
 import java.time.LocalDate;
 
-import org.springframework.web.bind.annotation.RestController;
 
 
-import jakarta.validation.constraints.Email;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
