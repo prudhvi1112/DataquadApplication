@@ -1,8 +1,8 @@
 package com.dataquad.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -22,12 +22,11 @@ import com.dataquad.repository.DataDao;
 @Service
 public class DataServiceImple implements DataService {
 
-	private String errorMessage = "Data Not Found";
-
-	private String errorMessageDataAlready = "Data Already Exists";
-
 	@Autowired
 	private DataDao dataDao;
+
+	private static final String DATA_NOT_FOUND_MESSAGE = "Data Not Found With EmailId : ";
+	private static final String DATA_ALREADY_EXISTS_MESSAGE = "Data Already Exists With EmailId : ";
 
 	@Transactional
 	public DataModel getDataModel(String email) {
@@ -45,7 +44,7 @@ public class DataServiceImple implements DataService {
 			DataModel model = dataDao.save(dtoToModel(dataDto));
 			return modelToDto(model);
 		} else {
-			throw new DataAlreadyExistsException(errorMessageDataAlready);
+			throw new DataAlreadyExistsException(DATA_ALREADY_EXISTS_MESSAGE + dataDto.getEmailId());
 		}
 	}
 
@@ -56,7 +55,7 @@ public class DataServiceImple implements DataService {
 		DataModel model = getDataModel(email);
 
 		if (model == null) {
-			throw new DataNotFoundException();
+			throw new DataNotFoundException(DATA_NOT_FOUND_MESSAGE + email);
 		} else {
 			dataDto.setEmailId(model.getEmailId());
 			DataModel dataModel = dataDao.save(dtoToModel(dataDto));
@@ -70,7 +69,7 @@ public class DataServiceImple implements DataService {
 	public DataDto getData(String email) {
 		DataModel dataModel = dataDao.findByEmailIdIgnoreCase(email);
 		if (dataModel == null) {
-			throw new DataNotFoundException(errorMessage);
+			throw new DataNotFoundException(DATA_NOT_FOUND_MESSAGE + email);
 
 		} else {
 			return modelToDto(dataModel);
@@ -82,17 +81,13 @@ public class DataServiceImple implements DataService {
 	public List<DataDto> getDataList(int page, int size) {
 
 		List<DataModel> content = dataDao.findAll(PageRequest.of(page, size)).getContent();
-		List<DataDto> dataList = new ArrayList<>();
 
 		if (content.isEmpty()) {
-			throw new DataNotFoundException(errorMessage);
+			throw new DataNotFoundException(DATA_NOT_FOUND_MESSAGE);
 
 		} else {
-			for (DataModel model : content) {
-				dataList.add(modelToDto(model));
-			}
 
-			return dataList;
+			return content.stream().map(data -> modelToDto(data)).collect(Collectors.toList());
 		}
 	}
 
@@ -101,7 +96,7 @@ public class DataServiceImple implements DataService {
 	public boolean deleteData(String email) {
 		DataModel dataModel = getDataModel(email);
 		if (dataModel == null) {
-			throw new DataNotFoundException(errorMessage);
+			throw new DataNotFoundException(DATA_NOT_FOUND_MESSAGE + email);
 		} else {
 			dataDao.delete(dataModel);
 			return true;
