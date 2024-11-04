@@ -25,6 +25,18 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
+	@ExceptionHandler(RoleAlreadyExistException.class)
+	public ResponseEntity<String> handleRoleAlreadyExistException(RoleAlreadyExistException ex) {
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+
+	}
+
+	@ExceptionHandler(RoleNotExistException.class)
+	public ResponseEntity<String> handleRoleNotExistException(RoleNotExistException ex) {
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+
+	}
+
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<Map<String, String>> handleConstraintViolation(ConstraintViolationException ex) {
 		Map<String, String> errors = new HashMap<>();
